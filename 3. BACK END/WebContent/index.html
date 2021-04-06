@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html>
+<!-- 로그인 하면 메뉴화면 추가 -->
+<!-- 지도 화면 추가 -->
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="js/main.js"></script>
+<script defer
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAJbB62ROqMY8zYaObopG8mXy2BqSwESBk&callback=initMap&libraries=&v=weekly"></script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+<style>
+#map {
+	height: 100%;
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+</style>
+</head>
+<body>
+	<!-- Login start-->
+	<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+		<div class="container justify-content-end">
+			<!-- Links -->
+			<ul class="navbar-nav" id="header">
+				<li class="nav-item"><a class="nav-link loginX" href="#"
+					data-toggle="modal" data-target="#loginModal">로그인</a></li>
+				<li class="nav-item"><a class="nav-link loginX" href="#"
+					data-toggle="modal" data-target="#joinModal">회원가입</a></li>
+				<li class="nav-item"><a class="nav-link loginO" id="logout"
+					href="#" style="display: none">로그아웃</a></li>
+				<li class="nav-item"><a class="nav-link loginO"
+					onclick=updateMainSite(1) href="#" style="display: none;">ID</a></li>
+				<li class="nav-item"><a class="nav-link"
+					onclick=updateMainSite(5) href="#">사이트맵</a></li>
+				<li class="nav-item"><a class="nav-link"
+					onclick=updateMainSite(3) href="#">웹페이지 소개</a></li>
+				<li class="nav-item"><a class="nav-link" href="#"
+					onclick=updateMainSite(2)>공지사항</a></li>
+			</ul>
+		</div>
+	</nav>
+	<!-- Login end -->
+	<!-- Logo start -->
+	<div class="jumbotron text-center" style="margin-bottom: 0">
+		<h1 onclick=updateMainSite(0)>Happy Home</h1>
+	</div>
+	<!-- Logo end -->
+
+	<!-- Main Content start -->
+	<div class="container" id="showData" style="display: none">
+		<!-- topMenu start-->
+		<nav class="navbar navbar-expand-sm bg-light justify-content-center">
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" href="#"
+					id="home-table">실거래가</a></li>
+				<li class="nav-item"><a class="nav-link" href="#"
+					id="store-table">동네업종</a></li>
+				<li class="nav-item"><a class="nav-link" href="#"
+					id="air-table">대기오염</a></li>
+				<li class="nav-item"><a class="nav-link" href="#"
+					id="hospital-table">코로나 검사</a></li>
+			</ul>
+		</nav>
+		<br>
+		<!-- topMenu end -->
+		<div class="row">
+			<!-- Right Content start -->
+			<div class="col-sm-12">
+				<!-- 현재 클릭한 제목 -->
+				<div class="jumbotron bg-white text-center" style="margin-bottom: 0">
+					<h1 id="search-title">실거래가</h1>
+				</div>
+				<div id="map" style="height: 500px"></div>
+
+				<!-- 검색 창 -->
+				<div class="row mt-3">
+					<div class="col-sm-3 text-right">
+						<div class="dropdown">
+							<button type="button"
+								class="btn btn-primary dropdown-toggle btn-block"
+								data-toggle="dropdown" id="searchStdName">검색 기준</button>
+							<div class="dropdown-menu" id="dropdown-menu">
+								<a class="dropdown-item searchStd" onclick=searchChange(0, '전체')
+									href="#">전체</a> <a class="dropdown-item searchStd"
+									onclick=searchChange(1, '동') href="#">동</a> <a
+									class="dropdown-item searchStd" onclick=searchChange(2, '아파트')
+									href="#">아파트</a> <a class="dropdown-item searchStd"
+									onclick=searchChange(3, '거래종류') href="#">거래종류</a>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-sm-6">
+						<input type="text" class="form-control w-100" id="dataInput"
+							placholder="내용을 입력하세요">
+					</div>
+					<div class="col-sm-2 text-left">
+						<button type="button" class="btn btn-primary btn-block"
+							id="dataSearch">검색</button>
+					</div>
+
+				</div>
+				<!-- 테이블 -->
+				<div class="text-center mt-3">
+					<table class="table table-striped" id="mainTable">
+						<thead id="mainTable_head">
+						</thead>
+						<tbody id="mainTable_body">
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- 검색 화면 -->
+			<!-- 테이블 -->
+			<!-- Right Content end -->
+		</div>
+
+	</div>
+	<!-- Main Content end -->
+	<!-- 공지사항 start-->
+	<div class="container" id="mainInfo">
+		<div class="jumbotron text-center bg-white"
+			style="margin-bottom: 0; height: 200px">
+			<h3>공지사항</h3>
+		</div>
+		<!-- 게시글 목록 -->
+		<div id="post-main">
+			<div class="row mt-3">
+				<div class="col-sm-2">
+					<button type="button" class="btn btn-primary newPost">글쓰기</button>
+				</div>
+				<div class="col-sm-5"></div>
+				<div class="col-sm-2 text-right">
+					<div class="dropdown">
+						<button type="button"
+							class="btn btn-outline-primary dropdown-toggle"
+							data-toggle="dropdown">검색 방법</button>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="#">아이디</a> <a
+								class="dropdown-item" href="#">번호</a>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-2">
+					<input type="text" class="form-control" id="usr">
+				</div>
+				<div class="col-sm-1">
+					<button type="button" class="btn btn-primary">검색</button>
+				</div>
+			</div>
+			<div class="mt-3">
+				<table class="table" id="table">
+					<thead>
+						<tr>
+							<th style="width: 10%">글 번호</th>
+							<th style="width: 50%">제목</th>
+							<th style="width: 20%">작성자</th>
+							<th style="width: 10%">조회수</th>
+							<th style="width: 10%">작성일</th>
+						</tr>
+					</thead>
+					<tbody id="inputTable">
+					</tbody>
+				</table>
+			</div>
+			<div class="text-center">
+				<ul class="pagination">
+					<li class="page-item"><a class="page-link" href="#">Previous</a></li>
+					<li class="page-item"><a class="page-link" href="#">1</a></li>
+					<li class="page-item"><a class="page-link" href="#">2</a></li>
+					<li class="page-item"><a class="page-link" href="#">3</a></li>
+					<li class="page-item"><a class="page-link" href="#">Next</a></li>
+				</ul>
+			</div>
+		</div>
+		<!-- 게시글 목록 End -->
+		<!-- 게시글 작성 -->
+		<div class="container" id="post-write" style="display: none;">
+			<div class="form-group">
+				<label for="email">제목:</label> <input type="text"
+					class="form-control">
+			</div>
+			<div class="form-group">
+				<label for="pwd">내용:</label> <input type="text" class="form-control"
+					style="height: 400px">
+			</div>
+			<div class="text-center">
+				<button type="submit" class="btn btn-primary newPost">글작성</button>
+				<button type="submit" class="btn btn-warning">초기화</button>
+				<button type="submit" class="btn btn-secondary"
+					onclick=updateMainSite(2)>목록</button>
+			</div>
+		</div>
+		<!-- 게시글 작성 End -->
+		<!-- 게시글 보기 -->
+		<div class="container mt-3" id="post-one" style="display: none;">
+			<div class="mt-3">
+				<button type="button" class="btn btn-primary newPost">새글쓰기</button>
+				<button type="button" class="btn btn-info">수정</button>
+				<button type="button" class="btn btn-danger">삭제</button>
+			</div>
+			<table class="table table-hover mt-3" border="1"
+				bordercolor="lightgray">
+				<thead>
+					<tr>
+						<th>제목</th>
+						<th colspan="5" id="Ttitle"></th>
+					</tr>
+
+					<tr>
+						<th>작성자</th>
+						<td id="Tid"></td>
+						<th>조회수</th>
+						<td id="Tcheck"></td>
+						<th>작성일</th>
+						<td id="Tdate"></td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr height="200px">
+						<td colspan="6" id="Tcontent"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="text-center">
+				<button type="button" class="btn btn-info">최신목록</button>
+				<button type="button" class="btn btn-info">이전목록</button>
+			</div>
+			<div class="row mt-3">
+				<div class="col-sm-11">
+					<textarea class="form-control" rows="5" id="comment"></textarea>
+				</div>
+				<div class="col-sm-1">
+					<button type="button" rows="5" class="btn btn-primary"
+						style="height: 100%">작성</button>
+				</div>
+			</div>
+		</div>
+		<!-- 게시글 보기 End -->
+		<!-- 게시글 수정 버튼 삭제 버튼 활성화 -->
+	</div>
+
+	<!-- 회원정보 start-->
+	<div class="container" id="personData">
+		<div class="jumbotron text-center bg-white"
+			style="margin-bottom: 0; height: 200px">
+			<h3>회원 정보</h3>
+		</div>
+		<div class="row">
+			<div class="col-sm-9 bg-black" id="personDataList"></div>
+			<div class="col-sm-3">
+				<div class="btn-group-vertical mt-3">
+					<button type="button" class="btn btn-outline-primary"
+						data-toggle="modal" data-target="#joinModal">회원정보 추가</button>
+					<button type="button" class="btn btn-outline-primary"
+						data-toggle="modal" data-target="#personUpdateModal">회원정보
+						수정</button>
+					<button type="button" class="btn btn-outline-primary"
+						data-toggle="modal" data-target="#personDeleteModal">회원정보
+						삭제</button>
+					<button type="button" class="btn btn-outline-primary"
+						data-toggle="modal" data-target="#personSearchModal">회원정보
+						검색</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 회원정보 end -->
+	<!-- 웹사이트 소개 start-->
+	<div class="container" id="websiteInfo">
+		<div class="jumbotron text-center bg-white"
+			style="margin-bottom: 0; height: 200px">
+			<h3>웹사이트 소개</h3>
+		</div>
+		<div class="row">
+			<div class="col-sm-8">
+				<img src="./img/main.png" width="700px" height="400px">
+			</div>
+			<div class="col-sm-4">
+				<h4 class="text-center">메인 화면</h4>
+				<br> 1. 로그인, 회원가입 클릭시 모달생성<br> 2. 사이트맵, 웹페이지 소개, 공지사항 클릭시
+				이동<br> 3. 로고 클릭시 메인 화면으로 변환<br> 4. 검색할 데이터 변환<br> 5.
+				검색 기준 선택, 입력된 텍스트로 단어 검색<br> 6. 검색 기준으로 데이터를 표로 작성
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-4">
+				<h4 class="text-center">로그인</h4>
+				<br> 1. ID와 Password를 입력<br> 2. 빈칸이면 알람 발생<br> 3. 없는
+				아이디면 알람 발생<br> 4. 비밀번호 일치하지 않으면 알랍 발생<br> 5. 비밀번호 찾기 클릭시
+				화면 이동 <br> <br> <br>
+				<h4 class="text-center">회원가입</h4>
+				<br> 1. ID, Password, email,이름 입력<br> 2. 빈칸이면 알람 발생<br>
+				3. 아이디 중복시 알람 발생<br> 4. 비밀번호 불 일치시 알람 발생<br>
+			</div>
+			<div class="col-sm-3">
+				<img src="./img/login.png" width="300px" height="400px">
+			</div>
+			<div class="col-sm-1"></div>
+			<div class="col-sm-3">
+				<img src="./img/join.png" width="300px" height="400px">
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-8">
+				<img src="./img/person.png" width="700px" height="400px">
+			</div>
+			<div class="col-sm-4">
+				<h4 class="text-center">회원 정보</h4>
+				<br> 로그인 후, 아이디 클릭하면 넘어옴 <br> 1. 전체 아이디를 화면에 표현<br>
+				2. 회원정보 추가시 회원가입 모달생성<br> 3. 회원정보 변경,삭제,검색 클릭시 모달 생성<br>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-4">
+				<h4 class="text-center">공지 사항</h4>
+				<br> 상단 사이트맨 공지사항 클릭시 넘어옴<br> post.xml에서 데이터를 가져와서 표현<br>
+			</div>
+			<div class="col-sm-8">
+				<img src="./img/info.png" width="700px" height="400px">
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-8">
+				<img src="./img/site.png" width="700px" height="400px">
+			</div>
+			<div class="col-sm-4">
+				<h4 class="text-center">사이트 맵</h4>
+				<br> 상단 사이트맨 클릭시 넘어옴<br> 구현된 각각 중요 페이지로 버튼 제작<br> 클릭시
+				필요한 사이트로 변환<br>
+			</div>
+		</div>
+		<hr>
+		<div class="row">
+			<div class="col-sm-4">
+				<h4 class="text-center">비밀번호 찾기</h4>
+				<br> 로그인 중, 비밀번호 찾기하면 넘어옴 <br> 1. ID, email,이름 입력<br>
+				2. 빈칸이면 알람 발생<br> 3. 이름 못찾으면 알람발생<br> 4. 이름 찾은후 이메일 일치 하지
+				않으면 알람발생<br> 5. 둘다 일치하면 비밀번호 알람 발생<br>
+			</div>
+			<div class="col-sm-8">
+				<img src="./img/findPassword.png" width="700px" height="400px">
+			</div>
+		</div>
+		<hr>
+	</div>
+	<!-- 웹사이트 소개 end-->
+
+	<!-- 비밀번호 찾기 start-->
+	<div class="container" id="findPassword">
+		<div class="jumbotron text-center bg-white"
+			style="margin-bottom: 0; height: 200px">
+			<h3>비밀번호 찾기</h3>
+		</div>
+		<div>
+			<div class="form-group">
+				<label for="email">ID:</label> <input type="text"
+					class="form-control" placeholder="Enter ID" id="pfid">
+			</div>
+			<div class="form-group">
+				<label for="pwd">Email:</label> <input type="email"
+					class="form-control" placeholder="Enter eamil" id="pfemail">
+			</div>
+			<button type="submit" class="btn btn-primary" id="findPasswordbtn">Find
+				Password</button>
+		</div>
+	</div>
+	<!-- 비밀번호 찾기 end-->
+	<!-- 사이트 맵 start -->
+	<div class="container text-center" id="siteMap">
+		<div class="jumbotron bg-white"
+			style="margin-bottom: 0; height: 200px">
+			<h3>사이트맵</h3>
+		</div>
+		<div class="alert alert-success " style="cursor: pointer"
+			onclick=updateMainSite(0)>
+			<strong>메인 홈페이지</strong>
+		</div>
+		<div class="alert alert-info" style="cursor: pointer"
+			onclick=updateMainSite(1)>
+			<strong>회원 정보</strong>
+		</div>
+		<div class="alert alert-warning" style="cursor: pointer"
+			onclick=updateMainSite(2)>
+			<strong>공지사항</strong>
+		</div>
+		<div class="alert alert-primary" style="cursor: pointer"
+			onclick=updateMainSite(3)>
+			<strong>웹사이트 소개</strong>
+		</div>
+		<div class="alert alert-secondary" style="cursor: pointer"
+			onclick=updateMainSite(4)>
+			<strong>비밀번호 찾기</strong>
+		</div>
+		<div class="alert alert-dark" style="cursor: pointer"
+			onclick=updateMainSite(5)>
+			<strong>사이트맵</strong>
+		</div>
+	</div>
+	<!-- 사이트 맵 end -->
+	<hr>
+	<footer class="footer">
+		<div class="container">
+			<span class="text-muted">SSAFY 서울 8반 김수연,양동혁</span>
+		</div>
+	</footer>
+	<!-- Modal Start -->
+	<!-- Login Start -->
+	<div class="modal" id="loginModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title text-center">로그인</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="container">
+					<div>
+						<label for="usr">ID</label> <input type="text"
+							class="form-control" id="loginID">
+					</div>
+					<div>
+						<label for="usr">Password</label> <input type="password"
+							class="form-control" id="loginPassword">
+					</div>
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="login">Login</button>
+						<button type="button" class="btn btn-primary"
+							onclick=updateMainSite(4)>비밀번호 찾기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Login End -->
+	<!-- Join Start -->
+	<div class="modal" id="joinModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title text-center">회원가입</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="container">
+					<div>
+						<label for="usr">ID</label> <input type="text"
+							class="form-control" id="usrID">
+					</div>
+					<div>
+						<label for="usr">Password</label> <input type="password"
+							class="form-control" id="usrPassword">
+					</div>
+					<div>
+						<label for="usr">Password Check</label> <input type="password"
+							class="form-control" id="usrPasswordCheck">
+					</div>
+
+					<div>
+						<label for="usr">Email</label> <input type="email"
+							class="form-control" id="usrEmailCheck">
+					</div>
+					<div>
+						<label for="usr">Name</label> <input type="text"
+							class="form-control" id="usrName">
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="join">Join</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Join End -->
+	<!-- personUpdate Start -->
+	<div class="modal" id="personUpdateModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title text-center">회원 정보 변경</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="container">
+					<div>
+						<label for="usr">ID</label> <input type="text"
+							class="form-control" id="puID">
+					</div>
+					<div>
+						<label for="usr">Password</label> <input type="password"
+							class="form-control" id="puPassword">
+					</div>
+					<div>
+						<label for="usr">Password Check</label> <input type="password"
+							class="form-control" id="puPasswordCheck">
+					</div>
+					<div>
+						<label for="usr">Email</label> <input type="email"
+							class="form-control" id="puEmailCheck">
+					</div>
+					<div>
+						<label for="usr">Name</label> <input type="text"
+							class="form-control" id="puName">
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="Update">Update</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- personUpdate End -->
+	<!-- personDelete Start -->
+	<div class="modal" id="personDeleteModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title text-center">회원 삭제</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="container">
+					<div>
+						<label for="usr">ID</label> <input type="text"
+							class="form-control" id="pdID">
+					</div>
+					<div>
+						<label for="usr">Password</label> <input type="password"
+							class="form-control" id="pdPassword">
+					</div>
+					<div>
+						<label for="usr">Password Check</label> <input type="password"
+							class="form-control" id="pdPasswordCheck">
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="Delete">Delete</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- personDelete End -->
+	<!-- personSearch Start -->
+	<div class="modal" id="personSearchModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title text-center">회원 검색</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="container">
+					<div>
+						<label for="usr">이름</label> <input type="text"
+							class="form-control" id="psID">
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger" id="Search">Search</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- personSearch End -->
+	<!-- Modal End -->
+</body>
+</html>
