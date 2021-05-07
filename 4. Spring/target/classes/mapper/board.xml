@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.dao.BoardDao">
+	
+	<select id="select" parameterType="int" resultType="BoardDto">
+		select * from post
+		where no = #{no}
+	</select>
+	
+
+	<select id="selectAll" parameterType="pageBean"
+		resultType="BoardDto">
+		select * from post
+		<where>
+			<if test="key != 'all' and word != null and word != '' ">
+				<choose>
+					<when test="key == 'name'">
+						name like concat('%', #{word}, '%')
+					</when>
+					<when test="key == 'title'">
+						title like concat('%', #{word}, '%')
+					</when>
+					<otherwise>
+						${key} = #{word}
+					</otherwise>
+				</choose>
+
+			</if>
+		</where>
+		order by no asc
+		limit #{startNo}, #{interval}
+	</select>
+
+
+	<select id="totalCount" parameterType="pageBean"
+		resultType="int">
+		select count(*) from post
+		<where>
+			<if test="key != 'all' and word != null and word != '' ">
+				<choose>
+					<when test="key == 'name'">
+						name like concat('%', #{word}, '%')
+					</when>
+					<when test="key == 'title'">
+						title like concat('%', #{word}, '%')
+					</when>
+					<otherwise>
+						${key} = #{word}
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</select>
+</mapper>

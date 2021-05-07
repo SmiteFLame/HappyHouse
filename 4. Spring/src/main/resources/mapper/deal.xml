@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.dao.DealDao">
+	
+	<select id="select" parameterType="int" resultType="DealDto">
+		select * from housedeal
+		where no = #{no}
+	</select>
+	
+	<select id="getLocation" parameterType="int" resultType="LocationDto">
+		select dong, lat, lng
+			from baseaddress
+			where dong = (
+			select dong
+			from housedeal
+			where no = #{no})
+	</select>
+
+	<select id="selectAll" parameterType="pageBean"
+		resultType="DealDto">
+		select * from housedeal
+		<where>
+			<if test="key != 'all' and word != null and word != '' ">
+				<choose>
+					<when test="key == 'AptName'">
+						AptName like concat('%', #{word}, '%')
+					</when>
+					<otherwise>
+						${key} = #{word}
+					</otherwise>
+				</choose>
+
+			</if>
+		</where>
+		order by no asc
+		limit #{startNo}, #{interval}
+	</select>
+
+
+	<select id="totalCount" parameterType="pageBean"
+		resultType="int">
+		select count(*) from housedeal
+		<where>
+			<if test="key != 'all' and word != null and word != '' ">
+				<choose>
+					<when test="key == 'AptName'">
+						AptName like concat('%', #{word}, '%')
+					</when>
+					<otherwise>
+						${key} = #{word}
+					</otherwise>
+				</choose>
+
+			</if>
+		</where>
+	</select>
+</mapper>
