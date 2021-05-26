@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.happyhouse.dao.CommunityDao">
+
+	<!-- 게시글 전체 조회 -->
+	<select id="selectCommunity" parameterType="pageBean" resultType="CommunityDto">
+		select c.no, m.username, c.regtime, c.title, c.content
+		from Community c, happyhouse_member m
+			<where>
+				c.userid = m.userid
+				<if test="key != 'all' and word != null and word != '' ">
+				<choose>
+					<when test="key == 'title'">
+						 and title like concat('%', #{word}, '%')
+					</when>
+					<otherwise>
+						and ${key} = #{word}
+					</otherwise>
+				</choose>
+
+			</if>
+			</where>
+		order by no desc
+	</select>
+	
+	<!-- 게시글 상세 조회 -->
+	<select id="selectCommunityByNo" resultType="CommunityDto">
+		select c.no, m.username, c.regtime, c.title, c.content
+		from Community c, happyhouse_member m
+		where c.userid = m.userid and no = #{no}
+	</select>
+	
+	<select id="selectComments" resultType="CommentDto">
+		select c.no, m.username, c.cno, c.regtime, c.info
+		from Comment c, happyhouse_member m
+		where c.userid = m.userid and c.cno = #{cno}
+		order by no asc
+	</select>
+
+	<!-- 게시글 등록 -->
+	<insert id="insertCommunity" parameterType="CommunityDto">
+		insert into Community(
+			userid, title, content
+		) values (
+			#{username}, #{title}, #{content}
+		)
+	</insert>
+	
+	<!-- 게시글 수정 -->
+	<update id="updateCommunity" parameterType="CommunityDto">
+		update Community
+		   set title = #{title},
+		   	   content = #{content}
+		 where no = #{no}
+	</update>
+
+	<!-- 게시글 삭제 -->
+	<delete id="deleteCommunity" parameterType="int">
+		delete from Community
+		 where no = #{no}
+	</delete>
+	
+	<!-- 게시글 등록 -->
+	<insert id="insertComment" parameterType="CommentDto">
+		insert into Comment(
+			userid, cno, info
+		) values (
+			#{username}, #{cno}, #{info}
+		)
+	</insert>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deleteComment" parameterType="int">
+		delete from Comment
+		 where no = #{no}
+	</delete>
+
+</mapper>
+

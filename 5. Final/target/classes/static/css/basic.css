@@ -1,0 +1,11 @@
+@CHARSET "UTF-8";
+
+.caption {height: 100px;		background-color:#D9D9D9; 
+		  font-size:1.5em;      text-align: center; 
+         }
+         
+.tbasic {height: 30px; border: 1px #F3F3F3 solid; 
+         width: 150px; padding-left: 5px;}
+.tspacial {background-color:#F3F3F3;}
+.bpadding {height: 5px; border: white; border: 0px;} 
+.tfoot {height: 50px;}  
