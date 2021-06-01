@@ -7,38 +7,38 @@
 5. Final - <b> Spring Boot, Vuejs, MyBatis, MySQL </b> 
 
 ### 실행화면 캡쳐 - 
-<b>메인페이지</b><br>
-![실행화면캡쳐](./5. Final/img/main.PNG)
+메인페이지<br>
+![실행화면캡쳐](./img/main.PNG)
 <br>
 
-<b>로그인</b><br>
-![실행화면캡쳐](./5. Final/img/login.PNG)
+로그인<br>
+![실행화면캡쳐](./img/login.PNG)
 <br>
 
-<b>회원가입</b><br>
-![실행화면캡쳐](./5. Final/img/join.PNG)
+회원가입<br>
+![실행화면캡쳐](./img/join.PNG)
 <br>
 
-<b>거래내역</b><br>
-![실행화면캡쳐](./5. Final/img/deal.PNG)
+거래내역<br>
+![실행화면캡쳐](./img/deal.PNG)
 <br>
 
-<b>회원정보</b><br>
-![실행화면캡쳐](./5. Final/img/member.PNG)
+회원정보<br>
+![실행화면캡쳐](./img/member.PNG)
 <br>
 
-<b>공지사항</b><br>
-![실행화면캡쳐](./5. Final/img/board.PNG)
+공지사항<br>
+![실행화면캡쳐](./img/board.PNG)
 <br>
 
-<b>Q&A 게시판</b><br>
-![실행화면캡쳐](./5. Final/img/qna.PNG)
+Q&A 게시판<br>
+![실행화면캡쳐](./img/qna.PNG)
 <br>
 
-<b>커뮤니티</b><br>
-![실행화면캡쳐](./5. Final/img/community.PNG)
+커뮤니티<br>
+![실행화면캡쳐](./img/community.PNG)
 <br>
 
-<b>커뮤니티 게시글</b><br>
+커뮤니티 게시글<br>
 ![실행화면캡쳐](./5. Final/img/community2.PNG)
 <br>
