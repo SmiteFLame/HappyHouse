@@ -40,5 +40,5 @@ Q&A 게시판<br>
 <br>
 
 커뮤니티 게시글<br>
-![실행화면캡쳐](./5. Final/img/community2.PNG)
+![실행화면캡쳐](./img/community2.PNG)
 <br>
